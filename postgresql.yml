@@ -1,0 +1,29 @@
+---
+- name: SGBD PostgreSQL
+  hosts: node1
+  become: yes
+  remote_user: ansible-user
+  tasks:
+  - name: Instalando ultima versao do postgresql
+    apt:
+      name: postgresql-12
+      state: present
+
+  - name: Copiando arquivo de configuracao do postgresql
+    template:
+      src: templates/postgresql.conf.j2
+      dest: /etc/postgresql/12/main/postgresql.conf
+    notify:
+       - restart postgresql
+
+  - name: Iniciando servico postgresql
+    service:
+      name: postgresql
+      enabled: true
+      state: started
+
+  handlers:
+  - name: restart postgresql
+    service:
+      name=postgresql
+      state=restarted
